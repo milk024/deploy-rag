@@ -1,0 +1,46 @@
+image:
+  repository: gpu.example.ac.kr/myorg/rag-server
+  tag: 7c54e36f60903d73b8fcb998f5584bc3f1d5c2b8
+  pullPolicy: IfNotPresent
+  pullSecretName: rag-registry-secret
+
+replicaCount: 1
+
+service:
+  port: 8000
+
+env:
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  LOG_LEVEL: info
+  DB_HOST: rag-postgres.rag-system.svc.cluster.local
+  DB_PORT: "5432"
+  TZ: "Asia/Seoul"
+  # 스캔 PDF OCR 모델(korean / server / off). 모델은 베이스 이미지(rag-model-base v5)의
+  # /app/models/paddlex 에 들어 있다. PADDLE_PDX_CACHE_HOME 은 이미지 ENV 가 정하므로 여기서 덮어쓰지 않는다
+  RAG_PDF_OCR: korean
+
+envFromSecrets:
+  - rag-postgres-secret
+  - rag-app-secret
+
+storage:
+  enabled: true
+  pvcName: rag-storage-pvc
+  documentMountPath: /app/documents
+  imageMountPath: /app/images
+
+gpu:
+  enabled: true
+  count: 1
+
+gateway:
+  enabled: true
+  existingGatewayName: rag-gateway
+  existingGatewaySectionName: https
+  hostname: "rag.example.ac.kr"
+
+logs:
+  enabled: true
+  pvcName: rag-logs-pvc
+  mountPath: /app/logs

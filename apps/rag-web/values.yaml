@@ -1,0 +1,16 @@
+image:
+  repository: gpu.example.ac.kr/myorg/rag-web
+  tag: fa726b958daccd6e8897c2888345701466511e0a
+  pullPolicy: IfNotPresent
+  pullSecretName: rag-registry-secret
+
+replicaCount: 1
+
+service:
+  port: 80
+
+gateway:
+  enabled: true
+  existingGatewayName: rag-gateway
+  existingGatewaySectionName: https
+  hostname: "rag.example.ac.kr"

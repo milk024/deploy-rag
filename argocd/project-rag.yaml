@@ -1,0 +1,25 @@
+# AppProject rag — deploy-rag 만 읽고, rag-system 네임스페이스에만 배포. 클러스터 범위 리소스는 허용하지 않음
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: rag
+  namespace: argocd
+spec:
+  description: rag-system 네임스페이스 (rag-server, rag-web)
+  sourceRepos:
+    # 2026-11-17 https 주소로 전환 (Gitea push 웹훅 주소와 같아야 ArgoCD 가 즉시 새로고침). ssh 주소는 전환 확인 후 삭제
+    - https://gpu.example.ac.kr/gitea/myorg/deploy-rag.git
+    - ssh://git@gitea-ssh.infra.svc.cluster.local:2222/myorg/deploy-rag.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: rag-system
+  clusterResourceWhitelist: []
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: LimitRange
+    - group: rbac.authorization.k8s.io
+      kind: Role
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
